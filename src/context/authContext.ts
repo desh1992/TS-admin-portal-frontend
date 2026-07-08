@@ -11,7 +11,6 @@ export interface AuthContextValue {
   can: (permission?: Permission | Permission[]) => boolean
   login: (identifier: string, password: string, rememberMe: boolean) => Promise<AdminSession>
   logout: () => Promise<void>
-  switchMockAdmin: (userId: string) => Promise<AdminSession>
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

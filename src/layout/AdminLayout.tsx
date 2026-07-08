@@ -2,6 +2,7 @@ import {
   BadgeDollarSign,
   Bell,
   ClipboardCheck,
+  FileBarChart,
   GraduationCap,
   Home,
   LifeBuoy,
@@ -33,6 +34,7 @@ const navigation = [
   },
   { label: 'Programs', to: '/admin/programs', icon: Video, permission: 'programs.read' },
   { label: 'Enrollments', to: '/admin/enrollments', icon: GraduationCap, permission: 'enrollments.read' },
+  { label: 'Reports', to: '/admin/reports', icon: FileBarChart, permission: 'dashboard.read' },
   { label: 'Finance', to: '/admin/finance', icon: BadgeDollarSign, permission: 'finance.read' },
   { label: 'Support', to: '/admin/support', icon: LifeBuoy, permission: 'support.manage' },
   { label: 'Reviews', to: '/admin/reviews', icon: Star, permission: 'programs.moderate' },
@@ -55,7 +57,7 @@ const navigation = [
 
 export function AdminLayout() {
   const navigate = useNavigate()
-  const { session, can, switchMockAdmin, logout, isLoggingOut } = useAuth()
+  const { session, can, logout, isLoggingOut } = useAuth()
   const visibleNavigation = navigation.filter((item) => can(item.permission))
 
   async function handleLogout() {
@@ -67,7 +69,7 @@ export function AdminLayout() {
     <div className="min-h-screen text-ink">
       <div className="hidden h-9 items-center justify-between bg-ink-slab px-6 text-sm text-on-ink lg:flex">
         <span>TalentShare Admin Portal</span>
-        <span className="text-graphite">Mock environment</span>
+        <span className="text-graphite">Connected to API</span>
       </div>
 
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-72 border-r border-white/10 bg-ink-slab text-on-ink lg:block lg:top-9">
@@ -115,20 +117,8 @@ export function AdminLayout() {
           <div className="border-t border-white/10 p-4">
             <p className="text-xs uppercase tracking-[0.24em] text-graphite">Signed in as</p>
             <p className="mt-2 font-medium">{session?.user?.username}</p>
-            <p className="text-sm text-on-ink/75">{session?.adminRole}</p>
+            <p className="text-sm text-on-ink/75">{session?.user?.email}</p>
             <div className="mt-3 grid gap-2">
-              <button
-                className="rounded-md bg-white/10 px-3 py-2 text-left text-xs font-bold hover:bg-white/15"
-                onClick={() => void switchMockAdmin('usr_1003')}
-              >
-                Switch to SUPER_ADMIN
-              </button>
-              <button
-                className="rounded-md bg-white/10 px-3 py-2 text-left text-xs font-bold hover:bg-white/15"
-                onClick={() => void switchMockAdmin('usr_1004')}
-              >
-                Switch to LIMITED_ADMIN
-              </button>
               <button
                 className="flex items-center gap-2 rounded-md bg-danger-deep/80 px-3 py-2 text-left text-xs font-bold text-on-ink hover:bg-danger-deep disabled:opacity-60"
                 disabled={isLoggingOut}
@@ -146,19 +136,6 @@ export function AdminLayout() {
         <div className="flex items-center justify-between gap-3">
           <img src="/talentshare-logo.png" alt="TalentShare" className="h-7 w-auto" />
           <div className="flex items-center gap-2">
-            <select
-              className="h-11 rounded-md border border-steel bg-canvas px-3 text-sm font-medium"
-              onChange={(event) => {
-                if (event.target.value) void switchMockAdmin(event.target.value)
-              }}
-              defaultValue=""
-            >
-              <option value="" disabled>
-                Switch role
-              </option>
-              <option value="usr_1003">SUPER_ADMIN</option>
-              <option value="usr_1004">LIMITED_ADMIN</option>
-            </select>
             <Button variant="outline-ink" disabled={isLoggingOut} onClick={() => void handleLogout()}>
               Sign out
             </Button>

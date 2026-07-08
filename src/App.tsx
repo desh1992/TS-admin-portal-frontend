@@ -12,6 +12,7 @@ import { ProgramsPage } from './pages/admin/ProgramsPage'
 import { ProviderApplicationsPage } from './pages/admin/ProviderApplicationsPage'
 import { ProvidersPage } from './pages/admin/ProvidersPage'
 import { ReviewsPage } from './pages/admin/ReviewsPage'
+import { ReportsPage } from './pages/admin/ReportsPage'
 import { SettingsPage } from './pages/admin/SettingsPage'
 import { SupportPage } from './pages/admin/SupportPage'
 import { UsersPage } from './pages/admin/UsersPage'
@@ -38,6 +39,9 @@ function App() {
           </Route>
           <Route element={<AdminProtectedRoute permission="enrollments.read" />}>
             <Route path="enrollments" element={<EnrollmentsPage />} />
+          </Route>
+          <Route element={<AdminProtectedRoute permission="dashboard.read" />}>
+            <Route path="reports" element={<ReportsPage />} />
           </Route>
           <Route element={<AdminProtectedRoute permission="finance.read" />}>
             <Route path="finance" element={<FinancePage />} />

@@ -40,14 +40,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
   })
 
-  const switchMutation = useMutation({
-    mutationFn: adminApi.switchMockAdmin,
-    onSuccess: (session) => {
-      queryClient.setQueryData(['admin', 'me'], session)
-      void queryClient.invalidateQueries({ queryKey: ['admin'] })
-    },
-  })
-
   const value = useMemo<AuthContextValue>(
     () => ({
       session: sessionQuery.data,
@@ -67,7 +59,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout: async () => {
         await logoutMutation.mutateAsync()
       },
-      switchMockAdmin: switchMutation.mutateAsync,
     }),
     [
       sessionQuery.data,
@@ -75,7 +66,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       sessionQuery.isLoading,
       loginMutation,
       logoutMutation,
-      switchMutation,
     ],
   )
 

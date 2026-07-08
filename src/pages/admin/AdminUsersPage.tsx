@@ -16,7 +16,7 @@ import {
 } from '../../components/ui'
 
 export function AdminUsersPage() {
-  const [userId, setUserId] = useState('usr_1001')
+  const [userId, setUserId] = useState('')
   const [role, setRole] = useState<AdminRole>('LIMITED_ADMIN')
   const [permissions, setPermissions] = useState<Permission[]>(DEFAULT_LIMITED_ADMIN_PERMISSIONS)
   const queryClient = useQueryClient()
@@ -30,6 +30,10 @@ export function AdminUsersPage() {
   })
   const disableMutation = useMutation({
     mutationFn: (id: string) => adminApi.updateAdminUser(id, { status: 'DISABLED' }),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['admin'] }),
+  })
+  const lockMutation = useMutation({
+    mutationFn: (id: string) => adminApi.updateAdminUser(id, { lock: true }),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['admin'] }),
   })
 
@@ -48,31 +52,41 @@ export function AdminUsersPage() {
     <>
       <PageHeader
         eyebrow="Access control"
-        title="Admin Users & RBAC"
-        description="Assign existing users as SUPER_ADMIN or LIMITED_ADMIN, disable access, and manage the LIMITED_ADMIN permission matrix."
+        title="Administrator & Support Users"
+        description="Create, update, delete, and lock customer support user accounts. Administrators inherit all portal capabilities."
       />
 
       <div className="mb-8 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <Card>
-          <h2 className="text-xl font-medium text-ink">Invite existing user</h2>
+          <h2 className="text-xl font-medium text-ink">Add support/admin user</h2>
+          <p className="mt-2 text-sm text-charcoal">
+            Promote an existing user to admin by pasting their user ID from User Management.
+          </p>
           <div className="mt-4 grid gap-4">
             <label className="grid gap-2 text-sm font-medium text-ink">
               User ID
-              <TextInput value={userId} onChange={(event) => setUserId(event.target.value)} />
+              <TextInput
+                value={userId}
+                placeholder="Paste an existing user id"
+                onChange={(event) => setUserId(event.target.value)}
+              />
             </label>
             <label className="grid gap-2 text-sm font-medium text-ink">
-              Role
+              Role label (UI only)
               <select
                 className="h-11 rounded-md border border-steel bg-canvas px-4 text-base text-ink outline-none focus:border-ink"
                 value={role}
                 onChange={(event) => setRole(event.target.value as AdminRole)}
               >
-                <option value="LIMITED_ADMIN">LIMITED_ADMIN</option>
-                <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                <option value="LIMITED_ADMIN">Support / Limited Admin</option>
+                <option value="SUPER_ADMIN">Administrator</option>
               </select>
             </label>
-            <Button disabled={createMutation.isPending} onClick={() => createMutation.mutate()}>
-              Add admin membership
+            <Button
+              disabled={createMutation.isPending || !userId.trim()}
+              onClick={() => createMutation.mutate()}
+            >
+              Add admin access
             </Button>
             {createMutation.error ? (
               <p className="text-sm font-medium text-danger-deep">{createMutation.error.message}</p>
@@ -81,8 +95,10 @@ export function AdminUsersPage() {
         </Card>
 
         <Card variant="feature">
-          <h2 className="text-xl font-medium text-ink">LIMITED_ADMIN Permission Matrix</h2>
-          <p className="mt-2 text-sm text-charcoal">SUPER_ADMIN implicitly receives every permission.</p>
+          <h2 className="text-xl font-medium text-ink">Permission Matrix (reference)</h2>
+          <p className="mt-2 text-sm text-charcoal">
+            Backend currently grants full admin access via the isAdmin flag. This matrix documents intended LIMITED_ADMIN scopes.
+          </p>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {ALL_PERMISSIONS.map((permission) => (
               <label key={permission} className="flex items-center gap-2 rounded-lg bg-canvas p-3 text-sm font-medium">
@@ -98,7 +114,7 @@ export function AdminUsersPage() {
         </Card>
       </div>
 
-      <DataTable headers={['Admin', 'Role', 'Status', 'Assigned', 'Permissions', 'Actions']}>
+      <DataTable headers={['Admin', 'Role', 'Status', 'Assigned', 'Actions']}>
         {adminUsersQuery.data.map((adminUser) => (
           <tr key={adminUser.id}>
             <td className="px-6 py-4">
@@ -112,13 +128,15 @@ export function AdminUsersPage() {
               <StatusBadge tone={adminUser.status === 'ACTIVE' ? 'good' : 'bad'}>{adminUser.status}</StatusBadge>
             </td>
             <td className="px-6 py-4 text-charcoal">{formatDate(adminUser.assignedAt)}</td>
-            <td className="px-6 py-4 text-sm text-charcoal">
-              {adminUser.role === 'SUPER_ADMIN' ? 'All permissions' : adminUser.permissions?.join(', ')}
-            </td>
             <td className="px-6 py-4">
-              <Button variant="danger" disabled={disableMutation.isPending} onClick={() => disableMutation.mutate(adminUser.id)}>
-                Disable
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline-ink" disabled={lockMutation.isPending} onClick={() => lockMutation.mutate(adminUser.id)}>
+                  Lock
+                </Button>
+                <Button variant="danger" disabled={disableMutation.isPending} onClick={() => disableMutation.mutate(adminUser.id)}>
+                  Remove admin
+                </Button>
+              </div>
             </td>
           </tr>
         ))}

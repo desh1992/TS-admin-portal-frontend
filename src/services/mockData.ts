@@ -222,6 +222,7 @@ export const providerApplications: ProviderApplication[] = [
     stripeStatus: 'PENDING',
     category: 'UX Research',
     experience: '8 years research lead at B2B SaaS teams.',
+    skills: ['User interviews', 'Usability testing', 'Journey mapping'],
   },
   {
     id: 'app_3002',
@@ -232,6 +233,7 @@ export const providerApplications: ProviderApplication[] = [
     stripeStatus: 'COMPLETE',
     category: 'Data Science',
     experience: 'Built ML curriculum and mentored 300+ learners.',
+    skills: ['Python', 'Machine learning', 'Statistics'],
   },
   {
     id: 'app_3003',
@@ -242,6 +244,7 @@ export const providerApplications: ProviderApplication[] = [
     stripeStatus: 'NOT_STARTED',
     category: 'Music Production',
     experience: 'Insufficient verification materials.',
+    skills: ['DAW production', 'Mixing'],
     notes: 'Asked applicant to resubmit credentials.',
   },
 ]
@@ -290,8 +293,7 @@ export const enrollments: Enrollment[] = [
     program: 'Portfolio Critique Sprint',
     status: 'ACTIVE',
     deliveryMode: 'ONLINE',
-    nextSession: '2026-06-10T19:00:00Z',
-    checkIns: 3,
+    enrolledAt: '2026-06-01T19:00:00Z',
   },
   {
     id: 'enr_5002',
@@ -300,8 +302,7 @@ export const enrollments: Enrollment[] = [
     program: 'Applied SQL for Analysts',
     status: 'DISPUTED',
     deliveryMode: 'HYBRID',
-    nextSession: '2026-06-12T18:00:00Z',
-    checkIns: 1,
+    enrolledAt: '2026-05-20T18:00:00Z',
   },
 ]
 
@@ -409,20 +410,23 @@ export const reviewReports: ReviewReport[] = [
 export const messageThreads: MessageThread[] = [
   {
     id: 'msg_1201',
-    participants: ['Maya Chen', 'Omar Khan'],
-    program: 'Portfolio Critique Sprint',
-    unreadCount: 2,
-    reports: 0,
-    lastMessageAt: '2026-06-08T15:55:00Z',
+    from: 'Support Team',
+    to: 'Maya Chen',
+    toEmail: 'maya@example.com',
+    subject: 'Portfolio Critique Sprint',
+    body: 'We received your inquiry about session scheduling.',
+    readAt: null,
+    sentAt: '2026-06-08T15:55:00Z',
   },
   {
     id: 'msg_1202',
-    participants: ['Noah Blake', 'Priya Raman'],
-    program: 'Applied SQL for Analysts',
-    unreadCount: 0,
-    reports: 1,
-    lastMessageAt: '2026-06-08T12:05:00Z',
-    contentAccessReason: 'Trust and safety dispute review',
+    from: 'Support Team',
+    to: 'Noah Blake',
+    toEmail: 'noah@example.com',
+    subject: 'Applied SQL for Analysts',
+    body: 'Trust and safety dispute review in progress.',
+    readAt: '2026-06-08T12:10:00Z',
+    sentAt: '2026-06-08T12:05:00Z',
   },
 ]
 

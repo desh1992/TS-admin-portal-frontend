@@ -28,8 +28,11 @@ export type UserStatus = 'ACTIVE' | 'SUSPENDED' | 'PENDING' | 'DISABLED'
 
 export interface User {
   id: string
+  publicId?: string
   email: string
   username: string
+  firstName?: string
+  lastName?: string
   role: UserRole
   status: UserStatus
   joinedAt: string
@@ -38,6 +41,21 @@ export interface User {
   enrollmentsCount: number
   paymentsTotal: number
   messagesCount: number
+  bio?: string | null
+}
+
+export interface UserDetail extends User {
+  providerApplications: Array<{
+    id: string
+    publicId: string
+    status: string
+    headline: string
+    createdAt: string
+  }>
+  media: Array<{ id: string; contentType: string; s3Key: string; createdAt: string }>
+  programs: Array<{ id: string; publicId: string; title: string; status: string }>
+  enrollments: Array<{ id: string; publicId: string; program: { title: string }; enrolledAt: string }>
+  supportTickets: Array<{ id: string; publicId: string; subject: string; status: string }>
 }
 
 export interface AdminUser {
@@ -103,6 +121,8 @@ export interface ProviderApplication {
   stripeStatus: 'NOT_STARTED' | 'PENDING' | 'COMPLETE'
   category: string
   experience: string
+  skills: string[]
+  portfolioUrl?: string
   notes?: string
 }
 
@@ -125,8 +145,7 @@ export interface Enrollment {
   program: string
   status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'DISPUTED'
   deliveryMode: 'ONLINE' | 'IN_PERSON' | 'HYBRID'
-  nextSession: string
-  checkIns: number
+  enrolledAt: string
 }
 
 export interface Cancellation {
@@ -167,7 +186,8 @@ export interface TransferRunResult {
 export interface SupportTicket {
   id: string
   requester: string
-  inquiryType: 'LOGIN' | 'PROFILE' | 'PROVIDER' | 'SEEKER' | 'PAYMENT' | 'PROGRAM' | 'OTHER'
+  // Backend inquiry categories are open-ended (GENERAL, BILLING, TECHNICAL, ...).
+  inquiryType: string
   status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED'
   assignedTo?: string
   subject: string
@@ -188,13 +208,26 @@ export interface ReviewReport {
 
 export interface MessageThread {
   id: string
-  participants: string[]
-  program: string
-  unreadCount: number
-  reports: number
-  lastMessageAt: string
-  contentAccessReason?: string
+  from: string
+  to: string
+  toEmail: string
+  subject: string
+  body: string
+  readAt: string | null
+  sentAt: string
 }
+
+export interface ReportResult<T = Record<string, unknown>> {
+  count: number
+  rows: T[]
+}
+
+export type ReportType =
+  | 'seekers-joined'
+  | 'provider-upgrades'
+  | 'providers-new-programs'
+  | 'programs-created'
+  | 'seeker-enrollments'
 
 export interface NotificationEvent {
   id: string

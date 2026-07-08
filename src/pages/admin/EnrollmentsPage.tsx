@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { adminApi } from '../../services/adminApi'
+import { formatDate } from '../../lib/format'
 import { DataTable, ErrorState, LoadingState, PageHeader, StatusBadge } from '../../components/ui'
 
 export function EnrollmentsPage() {
@@ -18,7 +19,7 @@ export function EnrollmentsPage() {
         title="Enrollment & Session Oversight"
         description="Monitor enrollments by seeker, provider, program, status, check-ins, sessions, cancellations, and delivery mode."
       />
-      <DataTable headers={['Enrollment', 'Status', 'Delivery', 'Next Session', 'Check-ins']}>
+      <DataTable headers={['Enrollment', 'Status', 'Delivery', 'Enrolled']}>
         {data.map((enrollment) => (
           <tr key={enrollment.id}>
             <td className="px-6 py-4">
@@ -33,8 +34,7 @@ export function EnrollmentsPage() {
               </StatusBadge>
             </td>
             <td className="px-6 py-4 text-charcoal">{enrollment.deliveryMode}</td>
-            <td className="px-6 py-4 text-charcoal">{new Date(enrollment.nextSession).toLocaleString()}</td>
-            <td className="px-6 py-4 text-charcoal">{enrollment.checkIns}</td>
+            <td className="px-6 py-4 text-charcoal">{formatDate(enrollment.enrolledAt)}</td>
           </tr>
         ))}
       </DataTable>

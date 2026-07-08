@@ -4,7 +4,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDecoration } from '../components/ChevronDecoration'
 import { Button, Card, LoadingState, TextInput } from '../components/ui'
 import { useAuth } from '../context/useAuth'
-import { MOCK_ADMIN_CREDENTIALS } from '../services/authApi'
+import { DEMO_CREDENTIALS } from '../services/authApi'
 import { getRememberedIdentifier } from '../services/authStorage'
 
 export function LoginPage() {
@@ -74,7 +74,7 @@ export function LoginPage() {
                   Email or username
                   <TextInput
                     autoComplete="username"
-                    placeholder="lena@talentshare.local"
+                    placeholder="admin@talentshare.com"
                     value={identifier}
                     onChange={(event) => setIdentifier(event.target.value)}
                   />
@@ -131,18 +131,17 @@ export function LoginPage() {
             <div className="grid size-12 place-items-center rounded-lg bg-primary text-on-primary">
               <LockKeyhole className="size-5" />
             </div>
-            <p className="mt-6 text-xs font-bold uppercase tracking-[0.28em] text-primary-bright">Mock credentials</p>
+            <p className="mt-6 text-xs font-bold uppercase tracking-[0.28em] text-primary-bright">Demo credentials</p>
             <p className="mt-4 text-sm leading-6 text-on-ink/80">
-              This portal uses a dummy auth flow for now. Check Remember me to auto-login on the next visit.
+              This portal is connected to the TalentShare API. Sign in with an admin account. Check
+              Remember me to auto-login on the next visit.
             </p>
 
             <div className="mt-6 flex flex-1 flex-col justify-center gap-4">
-              {MOCK_ADMIN_CREDENTIALS.map((account) => (
-                <div key={account.userId} className="rounded-lg border border-white/10 bg-white/5 p-4">
+              {DEMO_CREDENTIALS.map((account) => (
+                <div key={account.identifier} className="rounded-lg border border-white/10 bg-white/5 p-4">
                   <p className="font-medium text-primary-bright">{account.label}</p>
-                  <p className="mt-2 text-sm text-on-ink/80">
-                    ID: {account.identifiers[0]} or {account.identifiers[1]}
-                  </p>
+                  <p className="mt-2 text-sm text-on-ink/80">ID: {account.identifier}</p>
                   <p className="text-sm text-on-ink/80">Password: {account.password}</p>
                 </div>
               ))}

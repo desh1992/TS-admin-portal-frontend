@@ -1,71 +1,49 @@
-import { adminUsers } from './mockData'
+import { apiFetch } from './httpClient'
 import { clearAuth, getStoredAuth, persistAuth } from './authStorage'
 
-export interface MockAdminCredential {
-  userId: string
-  identifiers: string[]
-  password: string
-  label: string
+/** Shape returned by the backend `/api/auth/login` endpoint. */
+interface LoginResponse {
+  user: { id: string; isAdmin: boolean; username: string; email: string }
+  token: string
 }
 
-export const MOCK_ADMIN_CREDENTIALS: MockAdminCredential[] = [
+/** Demo credentials surfaced on the login screen for local testing. */
+export interface DemoCredential {
+  label: string
+  identifier: string
+  password: string
+}
+
+export const DEMO_CREDENTIALS: DemoCredential[] = [
   {
-    userId: 'usr_1003',
-    identifiers: ['lena@talentshare.local', 'lena-super'],
-    password: 'admin123',
-    label: 'SUPER_ADMIN',
-  },
-  {
-    userId: 'usr_1004',
-    identifiers: ['sam.ops@talentshare.local', 'sam-limited'],
-    password: 'admin123',
-    label: 'LIMITED_ADMIN',
+    label: 'ADMIN',
+    identifier: 'admin@talentshare.com',
+    password: 'admin12345',
   },
 ]
 
-function normalizeIdentifier(value: string) {
-  return value.trim().toLowerCase()
-}
-
-function findCredential(identifier: string, password: string) {
-  const normalized = normalizeIdentifier(identifier)
-  return MOCK_ADMIN_CREDENTIALS.find(
-    (account) =>
-      account.password === password &&
-      account.identifiers.some((item) => normalizeIdentifier(item) === normalized),
-  )
-}
-
-function createSessionToken(userId: string) {
-  return `mock-admin-token-${userId}-${Date.now()}`
-}
-
-function delay<T>(value: T, latency = 300): Promise<T> {
-  return new Promise((resolve) => window.setTimeout(() => resolve(value), latency))
-}
-
 export const authApi = {
   async login(identifier: string, password: string, rememberMe: boolean) {
-    const account = findCredential(identifier, password)
-    if (!account) {
-      throw new Error('Invalid email/username or password.')
+    const trimmed = identifier.trim()
+    const data = await apiFetch<LoginResponse>('/api/auth/login', {
+      method: 'POST',
+      auth: false,
+      body: { identifier: trimmed.toLowerCase(), password },
+    })
+
+    if (!data.user.isAdmin) {
+      // Non-admins authenticate fine but have no portal access — don't
+      // persist a session that the guard will immediately reject.
+      throw new Error('This account does not have admin access to the portal.')
     }
 
-    const admin = adminUsers.find(
-      (item) => item.userId === account.userId && item.status === 'ACTIVE',
-    )
-    if (!admin) {
-      throw new Error('This admin account is disabled.')
-    }
-
-    const token = createSessionToken(account.userId)
-    persistAuth(account.userId, token, rememberMe, normalizeIdentifier(identifier))
-    return delay({ userId: account.userId, token, role: admin.role })
+    persistAuth(data.user.id, data.token, rememberMe, trimmed)
+    return data
   },
 
   async logout() {
+    // JWTs are stateless; there is no server-side logout to call.
     clearAuth()
-    return delay(null, 120)
   },
 
   isAuthenticated() {

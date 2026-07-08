@@ -35,8 +35,15 @@ export function ProviderApplicationsPage() {
   })
 
   const reviewMutation = useMutation({
-    mutationFn: ({ id, decision, reviewNotes }: { id: string; decision: 'APPROVED' | 'REJECTED'; reviewNotes: string }) =>
-      adminApi.reviewProviderApplication(id, decision, reviewNotes),
+    mutationFn: ({
+      id,
+      decision,
+      reviewNotes,
+    }: {
+      id: string
+      decision: 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED'
+      reviewNotes: string
+    }) => adminApi.reviewProviderApplication(id, decision, reviewNotes),
     onSuccess: () => {
       setSelected(null)
       setNotes('')
@@ -55,7 +62,7 @@ export function ProviderApplicationsPage() {
       <PageHeader
         eyebrow="Provider onboarding"
         title="Provider Applications"
-        description="Review applications with required notes, Stripe onboarding status, and audit-backed approve/reject decisions."
+        description="Review applications with skills, portfolio links, and supporting experience. Approve or reject with required notes."
         action={
           <div className="flex flex-wrap gap-2 rounded-lg bg-cloud p-2">
             {filters.map((filter) => (
@@ -68,7 +75,7 @@ export function ProviderApplicationsPage() {
       />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_24rem]">
-        <DataTable headers={['Applicant', 'Status', 'Stripe', 'Category', 'Submitted', 'Action']}>
+        <DataTable headers={['Applicant', 'Status', 'Headline', 'Submitted', 'Action']}>
           {applicationsQuery.data.map((application) => (
             <tr key={application.id}>
               <td className="px-6 py-4">
@@ -80,12 +87,11 @@ export function ProviderApplicationsPage() {
                   {application.status}
                 </StatusBadge>
               </td>
-              <td className="px-6 py-4 text-charcoal">{application.stripeStatus}</td>
               <td className="px-6 py-4 text-charcoal">{application.category}</td>
               <td className="px-6 py-4 text-charcoal">{formatDate(application.submittedAt)}</td>
               <td className="px-6 py-4">
                 <Button variant="outline" onClick={() => setSelected(application)}>
-                  Open drawer
+                  Review
                 </Button>
               </td>
             </tr>
@@ -100,14 +106,20 @@ export function ProviderApplicationsPage() {
               <p className="mt-1 text-sm text-charcoal">{selected.email}</p>
               <div className="mt-5 space-y-4 text-sm">
                 <div>
+                  <p className="font-medium text-ink">Skills</p>
+                  <p className="mt-1 text-charcoal">{selected.skills.join(', ') || 'None listed'}</p>
+                </div>
+                {selected.portfolioUrl ? (
+                  <div>
+                    <p className="font-medium text-ink">Portfolio</p>
+                    <a href={selected.portfolioUrl} className="mt-1 text-primary underline" target="_blank" rel="noreferrer">
+                      {selected.portfolioUrl}
+                    </a>
+                  </div>
+                ) : null}
+                <div>
                   <p className="font-medium text-ink">Experience</p>
                   <p className="mt-1 leading-[1.5] text-charcoal">{selected.experience}</p>
-                </div>
-                <div>
-                  <p className="font-medium text-ink">Backend approval behavior</p>
-                  <p className="mt-1 leading-[1.5] text-charcoal">
-                    The real backend should convert seeker to provider and send notification/email on approval.
-                  </p>
                 </div>
                 <TextArea
                   placeholder="Required review notes or rejection reason..."
@@ -117,7 +129,14 @@ export function ProviderApplicationsPage() {
                 {reviewMutation.error ? (
                   <p className="text-sm font-medium text-danger-deep">{reviewMutation.error.message}</p>
                 ) : null}
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    disabled={reviewMutation.isPending}
+                    onClick={() => reviewMutation.mutate({ id: selected.id, decision: 'UNDER_REVIEW', reviewNotes: notes })}
+                  >
+                    Under review
+                  </Button>
                   <Button
                     disabled={reviewMutation.isPending}
                     onClick={() => reviewMutation.mutate({ id: selected.id, decision: 'APPROVED', reviewNotes: notes })}
@@ -138,7 +157,7 @@ export function ProviderApplicationsPage() {
             <div>
               <h2 className="text-xl font-medium text-ink">Application drawer</h2>
               <p className="mt-2 text-sm leading-[1.5] text-charcoal">
-                Select an application to review details, add required notes, and approve or reject.
+                Select an application to review skills, portfolio, and experience before approving or rejecting.
               </p>
             </div>
           )}

@@ -102,9 +102,9 @@ export function AdminOverview() {
               <ShieldCheck className="size-5" />
             </div>
             <div>
-              <h2 className="text-xl font-medium">Server-backed RBAC is simulated here</h2>
+              <h2 className="text-xl font-medium">Connected to TalentShare API</h2>
               <p className="mt-2 text-sm text-on-ink/80">
-                UI hiding is only for usability; every mocked endpoint also checks permissions before returning data.
+                User management, applications, programs, reports, support tickets, and messaging are backed by the live backend with audit logging.
               </p>
             </div>
           </div>
