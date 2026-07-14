@@ -11,7 +11,7 @@ export function LoginPage() {
   const navigate = useNavigate()
   const { session, isLoading, login, isLoggingIn, loginError } = useAuth()
   const location = useLocation()
-  const redirectTo = (location.state as { from?: string } | null)?.from ?? '/admin'
+  const redirectTo = (location.state as { from?: string } | null)?.from ?? '/admin/users'
 
   const [identifier, setIdentifier] = useState(() => getRememberedIdentifier())
   const [password, setPassword] = useState('')
@@ -65,7 +65,7 @@ export function LoginPage() {
                 <p className="mt-6 text-xs font-bold uppercase tracking-[0.24em] text-primary">Admin access</p>
                 <h1 className="mt-2 text-4xl font-medium tracking-tight text-ink">Sign in to TalentShare</h1>
                 <p className="mt-3 text-sm leading-6 text-charcoal">
-                  Use your admin email or username and password to access the admin dashboard.
+                  Use your admin email or username and password to manage TalentShare user profiles.
                 </p>
               </div>
 

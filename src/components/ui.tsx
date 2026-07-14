@@ -173,7 +173,7 @@ export function Button({
   className,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'ink' | 'outline' | 'outline-ink' | 'danger'
+  variant?: 'primary' | 'ink' | 'outline' | 'outline-ink' | 'danger' | 'outline-danger'
 }) {
   return (
     <button
@@ -184,6 +184,7 @@ export function Button({
         variant === 'outline' && 'border border-primary bg-canvas text-primary',
         variant === 'outline-ink' && 'border border-ink bg-canvas text-ink',
         variant === 'danger' && 'bg-danger-deep text-on-primary',
+        variant === 'outline-danger' && 'border border-danger-deep bg-canvas text-danger-deep',
         className,
       )}
       {...props}

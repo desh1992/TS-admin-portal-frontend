@@ -1,64 +1,21 @@
 import {
-  BadgeDollarSign,
-  Bell,
-  ClipboardCheck,
-  FileBarChart,
-  GraduationCap,
-  Home,
-  LifeBuoy,
-  LockKeyhole,
   LogOut,
-  MessageSquareWarning,
-  ScrollText,
-  Settings,
-  ShieldCheck,
-  Star,
   Users,
-  Video,
 } from 'lucide-react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import { classNames } from '../lib/format'
 import { Button } from '../components/ui'
-import type { Permission } from '../types/admin'
 
+// Requirements 2–7 are intentionally hidden for the current delivery.
+// Their pages remain in the repository and can be re-enabled here and in App.tsx.
 const navigation = [
-  { label: 'Overview', to: '/admin', icon: Home, permission: 'dashboard.read' },
-  { label: 'Users', to: '/admin/users', icon: Users, permission: 'users.read' },
-  { label: 'Providers', to: '/admin/providers', icon: ShieldCheck, permission: 'providers.read' },
-  {
-    label: 'Applications',
-    to: '/admin/provider-applications',
-    icon: ClipboardCheck,
-    permission: 'providerApplications.review',
-  },
-  { label: 'Programs', to: '/admin/programs', icon: Video, permission: 'programs.read' },
-  { label: 'Enrollments', to: '/admin/enrollments', icon: GraduationCap, permission: 'enrollments.read' },
-  { label: 'Reports', to: '/admin/reports', icon: FileBarChart, permission: 'dashboard.read' },
-  { label: 'Finance', to: '/admin/finance', icon: BadgeDollarSign, permission: 'finance.read' },
-  { label: 'Support', to: '/admin/support', icon: LifeBuoy, permission: 'support.manage' },
-  { label: 'Reviews', to: '/admin/reviews', icon: Star, permission: 'programs.moderate' },
-  {
-    label: 'Messages',
-    to: '/admin/messages',
-    icon: MessageSquareWarning,
-    permission: 'messages.metadata.read',
-  },
-  { label: 'Notifications', to: '/admin/notifications', icon: Bell, permission: 'notifications.read' },
-  { label: 'Admin Users', to: '/admin/admin-users', icon: LockKeyhole, permission: 'adminUsers.manage' },
-  { label: 'Audit Logs', to: '/admin/audit-logs', icon: ScrollText },
-  { label: 'Settings', to: '/admin/settings', icon: Settings, permission: 'systemSettings.manage' },
-] satisfies Array<{
-  label: string
-  to: string
-  icon: typeof Home
-  permission?: Permission
-}>
+  { label: 'User profiles', to: '/admin/users', icon: Users },
+]
 
 export function AdminLayout() {
   const navigate = useNavigate()
-  const { session, can, logout, isLoggingOut } = useAuth()
-  const visibleNavigation = navigation.filter((item) => can(item.permission))
+  const { session, logout, isLoggingOut } = useAuth()
 
   async function handleLogout() {
     await logout()
@@ -87,11 +44,11 @@ export function AdminLayout() {
           </div>
 
           <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-            {visibleNavigation.map((item) => (
+            {navigation.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === '/admin'}
+                end
                 className={({ isActive }) =>
                   classNames(
                     'relative flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition',
@@ -142,11 +99,11 @@ export function AdminLayout() {
           </div>
         </div>
         <nav className="mt-3 flex gap-2 overflow-x-auto pb-1">
-          {visibleNavigation.map((item) => (
+          {navigation.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/admin'}
+              end
               className={({ isActive }) =>
                 classNames(
                   'whitespace-nowrap rounded-full px-3 py-2 text-xs font-bold',

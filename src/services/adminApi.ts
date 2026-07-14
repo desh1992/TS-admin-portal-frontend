@@ -53,6 +53,14 @@ interface BackendUser {
   isVerified: boolean
   status: 'ACTIVE' | 'SUSPENDED' | 'DELETED'
   createdAt: string
+  avatar?: string | null
+  phone?: string | null
+  location?: string | null
+  professionalTitle?: string | null
+  lastLoginAt?: string | null
+  loginLocked?: boolean
+  providerProfileEnabled?: boolean
+  deletionRequestedAt?: string | null
 }
 
 interface Paginated {
@@ -112,8 +120,23 @@ interface BackendMessage {
 
 interface BackendUserDetail extends BackendUser {
   bio?: string | null
-  providerApplications?: Array<{ id: string; publicId: string; status: string; headline: string; createdAt: string }>
-  media?: Array<{ id: string; contentType: string; s3Key: string; createdAt: string }>
+  providerApplications?: Array<{
+    id: string
+    publicId: string
+    status: string
+    headline: string
+    skills?: string[]
+    experience?: string
+    portfolioUrl?: string | null
+    createdAt: string
+  }>
+  media?: Array<{
+    id: string
+    contentType: string
+    s3Key: string
+    fileName?: string | null
+    createdAt: string
+  }>
   programs?: Array<{ id: string; publicId: string; title: string; status: string }>
   enrollments?: Array<{ id: string; publicId: string; enrolledAt: string; program: { title: string } }>
   supportTickets?: Array<{ id: string; publicId: string; subject: string; status: string }>
@@ -202,6 +225,15 @@ function mapUser(user: BackendUser): User {
     enrollmentsCount: 0,
     paymentsTotal: 0,
     messagesCount: 0,
+    avatar: user.avatar ?? null,
+    phone: user.phone ?? null,
+    location: user.location ?? null,
+    professionalTitle: user.professionalTitle ?? null,
+    lastLoginAt: user.lastLoginAt ?? null,
+    loginLocked: user.loginLocked ?? user.status === 'SUSPENDED',
+    providerProfileEnabled:
+      user.role === 'PROVIDER' ? (user.providerProfileEnabled ?? true) : undefined,
+    deletionRequestedAt: user.deletionRequestedAt ?? null,
   }
 }
 
@@ -460,6 +492,35 @@ export const adminApi = {
       body: { status: toBackendStatus(status) },
     })
     return user ? mapUser(user) : null
+  },
+
+  async setUserLoginAccess(id: string, locked: boolean): Promise<User> {
+    const user = await apiFetch<BackendUser>(`/api/admin/users/${id}`, {
+      method: 'PATCH',
+      body: { status: locked ? 'SUSPENDED' : 'ACTIVE' },
+    })
+    return mapUser(user)
+  },
+
+  async setProviderProfileEnabled(id: string, enabled: boolean): Promise<User> {
+    const user = await apiFetch<BackendUser>(`/api/admin/users/${id}/provider-profile`, {
+      method: 'PATCH',
+      body: { enabled },
+    })
+    return mapUser(user)
+  },
+
+  async markUserForDeletion(id: string): Promise<User> {
+    const user = await apiFetch<BackendUser>(`/api/admin/users/${id}`, {
+      method: 'PATCH',
+      body: { status: 'DELETED' },
+    })
+    return mapUser(user)
+  },
+
+  async getUserDocumentUrl(mediaId: string): Promise<string> {
+    const result = await apiFetch<{ url: string; expiresIn: number }>(`/api/media/${mediaId}/signed`)
+    return result.url
   },
 
   async getProviders(): Promise<Provider[]> {

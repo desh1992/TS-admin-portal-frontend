@@ -42,6 +42,14 @@ export interface User {
   paymentsTotal: number
   messagesCount: number
   bio?: string | null
+  avatar?: string | null
+  phone?: string | null
+  location?: string | null
+  professionalTitle?: string | null
+  lastLoginAt?: string | null
+  loginLocked?: boolean
+  providerProfileEnabled?: boolean
+  deletionRequestedAt?: string | null
 }
 
 export interface UserDetail extends User {
@@ -50,9 +58,18 @@ export interface UserDetail extends User {
     publicId: string
     status: string
     headline: string
+    skills?: string[]
+    experience?: string
+    portfolioUrl?: string | null
     createdAt: string
   }>
-  media: Array<{ id: string; contentType: string; s3Key: string; createdAt: string }>
+  media: Array<{
+    id: string
+    contentType: string
+    s3Key: string
+    fileName?: string | null
+    createdAt: string
+  }>
   programs: Array<{ id: string; publicId: string; title: string; status: string }>
   enrollments: Array<{ id: string; publicId: string; program: { title: string }; enrolledAt: string }>
   supportTickets: Array<{ id: string; publicId: string; subject: string; status: string }>
