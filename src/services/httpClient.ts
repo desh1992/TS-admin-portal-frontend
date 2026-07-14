@@ -2,9 +2,11 @@ import { clearAuth, getStoredAuth } from './authStorage'
 
 /**
  * Base URL of the backend API. Configurable via `VITE_API_BASE_URL`
- * (see `.env.example`); defaults to the local dev backend.
+ * (see `.env.example`). Defaults to empty string (same-origin) so that
+ * in production the Express proxy handles `/api` requests without CORS.
+ * For local dev, set `VITE_API_BASE_URL=http://localhost:3000` in `.env`.
  */
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000').replace(
+export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(
   /\/$/,
   '',
 )

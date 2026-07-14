@@ -8,11 +8,13 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "serve dist -s -l $PORT"
+    "start": "node server.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.0",
     "clsx": "^2.1.1",
+    "express": "^5.2.1",
+    "http-proxy-middleware": "^3.0.7",
     "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
