@@ -1,5 +1,5 @@
 import express from 'express'
-import { createProxyMiddleware } from 'http-proxy-middleware'
+import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware'
 import { fileURLToPath } from 'url'
 import path from 'path'
 
@@ -9,16 +9,18 @@ const API_BACKEND = process.env.API_BACKEND_URL || 'http://localhost:3000'
 
 const app = express()
 
+app.use(express.json())
+
 app.use(
   '/api',
   createProxyMiddleware({
     target: API_BACKEND,
     changeOrigin: true,
     secure: true,
-    pathRewrite: undefined,
     on: {
       proxyReq: (proxyReq, req) => {
         proxyReq.path = req.originalUrl
+        fixRequestBody(proxyReq, req)
       },
     },
   }),
