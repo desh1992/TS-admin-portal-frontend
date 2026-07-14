@@ -15,6 +15,12 @@ app.use(
     target: API_BACKEND,
     changeOrigin: true,
     secure: true,
+    pathRewrite: undefined,
+    on: {
+      proxyReq: (proxyReq, req) => {
+        proxyReq.path = req.originalUrl
+      },
+    },
   }),
 )
 
