@@ -1,15 +1,15 @@
 import { clearAuth, getStoredAuth } from './authStorage'
 
 /**
- * Base URL of the backend API. Configurable via `VITE_API_BASE_URL`
- * (see `.env.example`). Defaults to empty string (same-origin) so that
- * in production the Express proxy handles `/api` requests without CORS.
- * For local dev, set `VITE_API_BASE_URL=http://localhost:3000` in `.env`.
+ * Base URL of the backend API. Configure it through `VITE_API_BASE_URL`
+ * (see `.env.example`). Production targets the deployed backend directly,
+ * while local development defaults to port 3000.
  */
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(
-  /\/$/,
-  '',
-)
+const DEFAULT_API_BASE_URL = import.meta.env.PROD
+  ? 'https://talent-share-admin-backend-4cfceb6f0d7f.herokuapp.com'
+  : 'http://localhost:3000'
+
+export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/$/, '')
 
 /** Standard backend response envelope: `{ success, data?, message? }`. */
 interface Envelope<T> {
